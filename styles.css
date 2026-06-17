@@ -48,8 +48,7 @@ body{
   color:var(--text);
   -webkit-font-smoothing:antialiased;
   height:100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow:hidden;
 }
 ::selection{background:rgba(37,99,235,0.18);color:var(--blue)}
 ::-webkit-scrollbar{width:5px}
@@ -66,8 +65,7 @@ body{
 #slides{
   flex:1;
   position:relative;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow:hidden;
 }
 
 .slide{
@@ -127,61 +125,22 @@ body{
 }
 
 /* ─── ARROW NAV ─── */
-.nav-arrow {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 200;
-
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(14px);
-
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-
-  font-size: 20px;
-  font-weight: 600;
-
-  color: rgba(255, 255, 255, 0.95);
-
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-
-  transition: all 0.25s ease;
+.nav-arrow{
+  position:fixed;top:50%;transform:translateY(-50%);
+  z-index:200;
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:18px;color:rgba(255,255,255,0.7);
+  transition:all 0.25s;
 }
+.nav-arrow:hover{background:rgba(255,255,255,0.2);color:white;transform:translateY(-50%) scale(1.08)}
+.nav-arrow.disabled{opacity:0.2;pointer-events:none}
+#nav-prev{left:64px}
+#nav-next{right:24px}
 
-.nav-arrow:hover {
-  background: rgba(0, 0, 0, 0.65);
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
-  color: #ffffff;
-}
-
-.nav-arrow:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-.nav-arrow.disabled {
-  opacity: 0.25;
-  pointer-events: none;
-  filter: grayscale(1);
-}
-
-#nav-prev {
-  left: 24px;
-}
-
-#nav-next {
-  right: 24px;
-}
 /* ─── TOP BAR ─── */
 #topbar{
   position:fixed;top:0;left:0;right:0;height:52px;z-index:100;
@@ -365,8 +324,7 @@ body{
   background:white;border:1.5px solid var(--border-md);
   border-radius:var(--r-xl);padding:32px;
   box-shadow:var(--shadow-lg);
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow:hidden;
 }
 
 /* ─── PIPELINE STEPS ─── */
@@ -521,11 +479,192 @@ tr:hover td{background:rgba(37,99,235,0.025)}
 .ck{color:#7dd3fc}.cs{color:#86efac}.cn{color:#fda4af}.cc{color:#475569}
 
 /* ─── CLOSING (dark) ─── */
-#slide-13{background:var(--grad-dark)}
-#slide-13 .slide-title,#slide-13 .eyebrow{color:white}
-#slide-13 .eyebrow::before{background:rgba(255,255,255,0.5)}
-#slide-13 .eyebrow{color:rgba(255,255,255,0.5)}
-#slide-13 .slide-lead{color:rgba(255,255,255,0.5)}
+#slide-14{background:var(--grad-dark)}
+#slide-14 .slide-title,#slide-14 .eyebrow{color:white}
+#slide-14 .eyebrow::before{background:rgba(255,255,255,0.5)}
+#slide-14 .eyebrow{color:rgba(255,255,255,0.5)}
+#slide-14 .slide-lead{color:rgba(255,255,255,0.5)}
+
+/* ═══════════════════════════════════════════
+   ENGINEERING RATIONALE SLIDE (dark, matches hero)
+   ═══════════════════════════════════════════ */
+#slide-9{background:var(--grad-dark)}
+#slide-9 .eyebrow{color:rgba(255,255,255,0.5)}
+#slide-9 .eyebrow::before{background:rgba(255,255,255,0.4)}
+#slide-9 .slide-title{color:white}
+#slide-9 .slide-lead{color:rgba(255,255,255,0.55)}
+
+.er-glow-bg{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;
+}
+.er-glow-bg::before{
+  content:'';position:absolute;top:-10%;left:10%;width:50%;height:60%;
+  background:radial-gradient(circle,rgba(37,99,235,0.18) 0%,transparent 70%);
+  filter:blur(40px);animation:glow 5s ease-in-out infinite;
+}
+.er-glow-bg::after{
+  content:'';position:absolute;bottom:-10%;right:5%;width:45%;height:55%;
+  background:radial-gradient(circle,rgba(124,58,237,0.16) 0%,transparent 70%);
+  filter:blur(40px);animation:glow 5s ease-in-out infinite 1.5s;
+}
+
+.er-statement{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--r-xl);
+  padding:36px 44px;
+  margin-bottom:40px;
+  backdrop-filter:blur(20px);
+}
+.er-statement .line-dim{font-size:18px;color:rgba(255,255,255,0.45);font-weight:500;line-height:1.5;}
+.er-statement .line-bright{
+  font-size:24px;color:white;font-weight:800;line-height:1.4;margin-top:8px;
+  background:var(--grad-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.er-glass-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--r-lg);
+  padding:22px;
+  backdrop-filter:blur(16px);
+  transition:all 0.3s var(--ease);
+  position:relative;z-index:1;
+}
+.er-glass-card:hover{
+  background:rgba(255,255,255,0.08);
+  border-color:rgba(255,255,255,0.2);
+  transform:translateY(-4px);
+}
+.er-glass-icon{
+  width:42px;height:42px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:19px;
+  margin-bottom:14px;background:rgba(255,255,255,0.08);
+}
+.er-glass-title{font-size:14.5px;font-weight:700;color:white;margin-bottom:6px;}
+.er-glass-body{font-size:12.5px;color:rgba(255,255,255,0.55);line-height:1.6;}
+
+/* family expand cards */
+.er-family-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--r-md);
+  padding:16px 18px;
+  cursor:pointer;
+  transition:all 0.3s var(--ease);
+  backdrop-filter:blur(16px);
+  position:relative;z-index:1;
+}
+.er-family-card:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.18);}
+.er-family-card.open{border-color:rgba(124,140,255,0.4);background:rgba(124,140,255,0.08);}
+.er-family-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.er-family-name{font-size:13.5px;font-weight:700;color:white;}
+.er-family-members{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;}
+.er-family-chevron{color:rgba(255,255,255,0.4);font-size:11px;transition:transform 0.3s;flex-shrink:0;}
+.er-family-card.open .er-family-chevron{transform:rotate(180deg);}
+.er-family-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);font-size:12.5px;color:rgba(255,255,255,0.6);line-height:1.65;}
+.er-family-card.open .er-family-detail{display:block;}
+
+/* four axes pillars */
+.er-axis-pillar{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--r-lg);
+  padding:28px 20px;
+  text-align:center;
+  backdrop-filter:blur(16px);
+  transition:all 0.3s var(--ease);
+  position:relative;z-index:1;
+  cursor:default;
+}
+.er-axis-pillar:hover{
+  background:rgba(255,255,255,0.09);
+  transform:translateY(-6px);
+  border-color:rgba(124,140,255,0.35);
+}
+.er-axis-num{
+  font-size:13px;font-weight:800;color:rgba(255,255,255,0.3);
+  margin-bottom:10px;letter-spacing:0.05em;
+}
+.er-axis-icon{font-size:32px;margin-bottom:14px;}
+.er-axis-name{font-size:14.5px;font-weight:700;color:white;margin-bottom:10px;}
+.er-axis-tooltip{
+  font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;
+  max-height:0;overflow:hidden;opacity:0;
+  transition:all 0.35s var(--ease);
+}
+.er-axis-pillar:hover .er-axis-tooltip{max-height:120px;opacity:1;margin-top:8px;}
+
+/* pipeline mini flow */
+.er-pipe-track{display:flex;align-items:center;overflow-x:auto;gap:0;padding:8px 0;position:relative;z-index:1;}
+.er-pipe-node{flex-shrink:0;display:flex;flex-direction:column;align-items:center;min-width:96px;position:relative;}
+.er-pipe-circle{
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(255,255,255,0.07);
+  border:1.5px solid rgba(255,255,255,0.18);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  transition:all 0.4s var(--ease);
+}
+.er-pipe-circle.lit{
+  background:var(--grad-brand);
+  border-color:transparent;
+  box-shadow:0 0 20px rgba(124,140,255,0.5);
+  transform:scale(1.12);
+}
+.er-pipe-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);margin-top:8px;text-align:center;line-height:1.3;max-width:88px;}
+.er-pipe-connector{flex:1;height:2px;min-width:18px;background:rgba(255,255,255,0.12);position:relative;}
+.er-pipe-connector.lit{background:linear-gradient(90deg,var(--blue),var(--purple));}
+
+/* tradeoff glass cards */
+.er-tradeoff-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--r-lg);
+  padding:28px 24px;
+  text-align:center;
+  backdrop-filter:blur(16px);
+  position:relative;z-index:1;
+}
+.er-tradeoff-pct{
+  font-size:48px;font-weight:900;letter-spacing:-0.03em;line-height:1;
+  background:var(--grad-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.er-tradeoff-label{font-size:14px;font-weight:700;color:white;margin-top:8px;}
+.er-tradeoff-sub{font-size:11.5px;color:rgba(255,255,255,0.45);margin-top:4px;}
+
+/* roadmap honest gaps */
+.er-gap-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-left:3px solid var(--amber);
+  border-radius:var(--r-md);
+  padding:18px 20px;
+  backdrop-filter:blur(16px);
+  position:relative;z-index:1;
+}
+.er-gap-title{font-size:13.5px;font-weight:700;color:white;margin-bottom:5px;}
+.er-gap-desc{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;}
+.er-gap-tag{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10.5px;font-weight:600;color:#fbbf24;}
+
+/* final hero statement */
+.er-final{
+  text-align:center;position:relative;z-index:1;
+  padding:40px 0 8px;
+}
+.er-final-title{
+  font-size:clamp(28px,3.4vw,44px);font-weight:900;color:white;
+  line-height:1.25;letter-spacing:-0.02em;
+}
+.er-final-title .num{
+  background:var(--grad-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.er-final-sub{font-size:14.5px;color:rgba(255,255,255,0.45);margin-top:14px;}
+
+@media(max-width:900px){
+  .er-statement{padding:24px;}
+  .er-statement .line-bright{font-size:19px;}
+}
 
 /* ─── ANIMATIONS ─── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}

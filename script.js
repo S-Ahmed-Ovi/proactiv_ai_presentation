@@ -13,11 +13,12 @@ const CHAPTERS = [
   { id:'pipeline',  title:'Training Pipeline',    label:'07 — Pipeline' },
   { id:'embedding', title:'Embedding Arch',       label:'08 — Embeddings' },
   { id:'algo',      title:'21 Algorithms',        label:'09 — Algorithms' },
-  { id:'selection', title:'Model Selection',      label:'10 — Selection' },
-  { id:'metrics',   title:'Metrics Dashboard',    label:'11 — Metrics' },
-  { id:'security',  title:'Security',             label:'12 — Security' },
-  { id:'roadmap',   title:'Roadmap',              label:'13 — Roadmap' },
-  { id:'closing',   title:'Closing',              label:'14 — Closing' },
+  { id:'rationale', title:'Engineering Rationale',label:'10 — Why 21 Algorithms?' },
+  { id:'selection', title:'Model Selection',      label:'11 — Selection' },
+  { id:'metrics',   title:'Metrics Dashboard',    label:'12 — Metrics' },
+  { id:'security',  title:'Security',             label:'13 — Security' },
+  { id:'roadmap',   title:'Roadmap',              label:'14 — Roadmap' },
+  { id:'closing',   title:'Closing',              label:'15 — Closing' },
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -38,6 +39,7 @@ function slideHero() {
     <div class="hero-ctas anim-up delay-4">
       <button class="btn-brand" onclick="goTo(3)"><i class="fas fa-play"></i> Explore Architecture</button>
       <button class="btn-outline" onclick="goTo(8)"><i class="fas fa-cube"></i> View Algorithms</button>
+      <button class="btn-outline" onclick="goTo(9)"><i class="fas fa-brain"></i> Why 21 Algorithms?</button>
     </div>
   </div>`;
 }
@@ -348,10 +350,167 @@ function slideAlgo() {
   </div>`;
 }
 
+function slideRationale() {
+  const families = [
+    { name:'Matrix Factorization', members:'SVD · SVD++ · NMF · ALS', icon:'🔢', why:'Four variants are kept because they fail differently: SVD is the fast general default, SVD++ squeezes extra accuracy from small explicit datasets at the cost of speed, NMF\'s non-negativity makes factors human-interpretable, and ALS is the only one built for unlimited-scale implicit data.' },
+    { name:'Pairwise Ranking', members:'BPR · WARP', icon:'📊', why:'These optimize ranking order directly — matching the platform\'s actual top-K serving objective better than reconstruction-error models. BPR is the fast unlimited-scale default; WARP trades training cost for more aggressive ranking precision.' },
+    { name:'Neighborhood Methods', members:'User-KNN · Item-KNN', icon:'🔍', why:'Zero black-box risk — a recommendation explains in one sentence ("users like you bought X"). Critical for government and trust-sensitive publisher tenants where an opaque score is a harder sell than a transparent match.' },
+    { name:'Linear & Sparse Linear', members:'EASE · SLIM', icon:'📐', why:'No iterative optimization, no local-minima risk. EASE solves a single closed-form ridge regression and is a deceptively strong baseline. SLIM trades training speed for some of the highest interpretability and accuracy on small catalogs.' },
+    { name:'Graph / Random Walk', members:'P3Alpha · RP3Beta', icon:'🕸️', why:'Captures multi-hop collaborative signal far more cheaply than factorization, with no scale ceiling. RP3Beta adds popularity-damping to counteract rich-get-richer bias — a built-in check against over-concentration.' },
+    { name:'Hybrid', members:'LightFM', icon:'🧬', why:'The only registry member that natively blends collaborative signal with item/user side features inside one model — softening cold-start since a brand-new item can still get a reasonable embedding from its features alone.' },
+    { name:'Neural', members:'Autoencoder-CF', icon:'🤖', why:'A deliberate, low-risk foothold for non-linear modeling. It proves the production pipeline can support a neural candidate before committing to GPU infrastructure — deeper architectures are explicitly deferred to the roadmap.' },
+    { name:'Content-Based', members:'Content TF-IDF', icon:'📄', why:'The only algorithm needing zero interaction history to function. It serves the true cold-start case — a brand-new tenant\'s first day of traffic — which every purely collaborative algorithm is structurally unable to do.' },
+    { name:'Feature Interaction', members:'Factorization Machines', icon:'🧮', why:'Generalizes matrix factorization to model interactions between arbitrary feature pairs, not just user-item. The bridge for tenants with structured side data — demographics, price tiers, content tags.' },
+    { name:'Domain-Specialized', members:'Temporal-SVD · Movie-KNN · Ecom-Pop. · Ecom-ALS', icon:'🏷️', why:'Encode vertical-specific priors generic CF cannot infer: taste drift over time, genre similarity, a zero-training popularity floor, purchase-over-click weighting. The exception, not the pattern — 16 of 21 stay domain-agnostic.' },
+    { name:'Semantic Retrieval', members:'Sentence-BERT Embeddings', icon:'🔮', why:'Solves cold start through item content semantics rather than collaborative signal. Marked "External req." since it depends on OpenSearch — blended into serving (CF × 0.7 + embedding) rather than competing on the standard leaderboard.' },
+  ];
+
+  const axes = [
+    { num:'AXIS 01', icon:'📡', name:'Feedback Type', tip:'Explicit star ratings vs. implicit clicks, views, and purchases. Forcing one model family to handle both causes silent accuracy loss.' },
+    { num:'AXIS 02', icon:'🧩', name:'Algorithm Paradigm', tip:'The dimension that does the most work — 11 structurally distinct families, not 11 flavors of one idea.' },
+    { num:'AXIS 03', icon:'📈', name:'Scale & Capacity', tip:'From 5K-item small-scale tiers to fully unlimited-scale algorithms — tiered explicitly so the eligibility filter has real work to do.' },
+    { num:'AXIS 04', icon:'🏛️', name:'Domain Specialization', tip:'Movie, e-commerce, publishing, government — vertical priors added only where they have well-documented lift, not as a default strategy.' },
+  ];
+
+  const pipelineSteps = ['📥 Dataset Upload','🔍 Feedback Detection','📊 Scale Classification','🧮 Eligibility Filter','🎯 Optuna Tuning','🏆 Benchmarking','📋 Composite Leaderboard','🚀 Auto Promotion'];
+
+  const gaps = [
+    { title:'Diversity Metrics Not Yet Implemented', desc:'MAP, MRR, Hit Rate, Coverage, and Diversity are not currently in the composite score — the 70% Performance weight is built entirely from ranking-position and rating-error metrics today. Correctly the first item on the short-term roadmap.', tag:'Short-Term Roadmap' },
+    { title:'Deep Sequential Models Deferred', desc:'SASRec, DIN, and Transformers4Rec are not in the current registry. They need GPU infrastructure and operational maturity the platform is still building toward — a reasonable call for a deploy-in-minutes SaaS product.', tag:'Long-Term Roadmap' },
+    { title:'Graph Neural Networks — Future Roadmap', desc:'PinSage and LightGCN are explicitly long-term items. Autoencoder-CF is the deliberate low-risk foothold that proves the pipeline can support a neural candidate before this infrastructure commitment is made.', tag:'Long-Term Roadmap' },
+    { title:'Semantic Embedding — Special Case', desc:'Served through OpenSearch HNSW rather than a self-contained training artifact. Blended directly into serving (CF × 0.7 + embedding score) instead of the standard benchmark-then-promote path — a named exception, not a silent one.', tag:'Architectural Exception' },
+  ];
+
+  return `
+  <div class="slide-inner" style="position:relative;max-width:1200px;">
+    <div class="er-glow-bg"></div>
+    <div class="eyebrow anim-up" style="position:relative;z-index:1;">Chapter 10 — Engineering Design Rationale</div>
+    <h2 class="slide-title anim-up delay-1" style="position:relative;z-index:1;">Why These 21 Algorithms?</h2>
+    <p class="slide-lead anim-up delay-2" style="position:relative;z-index:1;max-width:680px;">Enterprise-grade automated model selection requires diversity, not a single "best" algorithm.</p>
+
+    <div class="er-statement anim-up delay-3">
+      <div class="line-dim">The platform's value is not choosing one algorithm.</div>
+      <div class="line-bright">It is allowing each tenant's own data to automatically choose its best algorithm.</div>
+    </div>
+
+    <!-- Section 1: Core Design Principle -->
+    <div class="anim-up delay-4" style="position:relative;z-index:1;margin-bottom:48px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:16px;">Section 01 · Core Design Principle</div>
+      <div class="g3" style="grid-template-columns:repeat(5,1fr);gap:14px;">
+        ${[
+          ['📡','Feedback Type','Explicit ratings vs. implicit behavior signals — clicks, views, purchases.'],
+          ['📈','Scale','Different tenant sizes require structurally different model families.'],
+          ['🏛️','Domain Knowledge','Movie, e-commerce, publishing, government — each with exploitable structure.'],
+          ['🔍','Interpretability','Some industries require explainable recommendations, not opaque scores.'],
+          ['🥶','Cold Start','New users and new items require specialized, non-collaborative approaches.'],
+        ].map(([icon,t,d])=>`
+        <div class="er-glass-card">
+          <div class="er-glass-icon">${icon}</div>
+          <div class="er-glass-title">${t}</div>
+          <div class="er-glass-body">${d}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Section 2: Diversity Is The Feature -->
+    <div class="anim-up delay-5" style="position:relative;z-index:1;margin-bottom:48px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:16px;">Section 02 · Diversity Is the Feature</div>
+      <div style="display:flex;align-items:center;gap:0;overflow-x:auto;padding:8px 0;">
+        ${['21 Algorithms','11 Algorithm Families','Automated Selection Pipeline','Best Model Per Tenant'].map((label,i,arr)=>`
+        <div style="display:flex;align-items:center;flex-shrink:0;">
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:100px;padding:12px 22px;font-size:13px;font-weight:700;color:white;white-space:nowrap;backdrop-filter:blur(10px);">${label}</div>
+          ${i<arr.length-1?`<div style="width:36px;height:2px;background:linear-gradient(90deg,var(--blue),var(--purple));margin:0 4px;position:relative;flex-shrink:0;"><span style="position:absolute;right:-4px;top:50%;transform:translateY(-50%);color:#a5b4fc;font-size:12px;">▶</span></div>`:''}
+        </div>`).join('')}
+      </div>
+      <div style="margin-top:18px;padding:16px 20px;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.25);border-radius:var(--r-md);font-size:13px;color:#fcd34d;font-weight:600;font-style:italic;">
+        "Removing an algorithm is only justified if no capability gap appears."
+      </div>
+    </div>
+
+    <!-- Section 3: Algorithm Family Showcase -->
+    <div class="anim-up delay-5" style="position:relative;z-index:1;margin-bottom:48px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:16px;">Section 03 · Algorithm Family Showcase — Click to Expand</div>
+      <div class="g3" id="erFamilyGrid">
+        ${families.map((f,i)=>`
+        <div class="er-family-card" id="erfam-${i}" onclick="toggleERFamily(${i})">
+          <div class="er-family-head">
+            <div>
+              <div class="er-family-name">${f.icon} ${f.name}</div>
+              <div class="er-family-members">${f.members}</div>
+            </div>
+            <i class="fas fa-chevron-down er-family-chevron"></i>
+          </div>
+          <div class="er-family-detail">${f.why}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Section 4: The Four Axes -->
+    <div class="anim-up delay-5" style="position:relative;z-index:1;margin-bottom:48px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:16px;">Section 04 · The Four Axes — Hover to Explore</div>
+      <div class="g4">
+        ${axes.map(a=>`
+        <div class="er-axis-pillar">
+          <div class="er-axis-num">${a.num}</div>
+          <div class="er-axis-icon">${a.icon}</div>
+          <div class="er-axis-name">${a.name}</div>
+          <div class="er-axis-tooltip">${a.tip}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Section 5: Automated Selection Pipeline -->
+    <div class="anim-up delay-5" style="position:relative;z-index:1;margin-bottom:48px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:16px;">Section 05 · Automated Selection Pipeline</div>
+      <div class="er-pipe-track" id="erPipeTrack">
+        ${pipelineSteps.map((s,i,arr)=>{
+          const [icon,...rest]=s.split(' ');
+          return `<div class="er-pipe-node">
+            <div class="er-pipe-circle" id="erpc-${i}">${icon}</div>
+            <div class="er-pipe-label">${rest.join(' ')}</div>
+          </div>${i<arr.length-1?`<div class="er-pipe-connector" id="erpcon-${i}"></div>`:''}`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Section 6: Production Tradeoffs -->
+    <div class="anim-up delay-5" style="position:relative;z-index:1;margin-bottom:48px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:16px;">Section 06 · Production Trade-offs</div>
+      <div class="g3" style="margin-bottom:16px;">
+        <div class="er-tradeoff-card"><div class="er-tradeoff-pct">70%</div><div class="er-tradeoff-label">Accuracy</div><div class="er-tradeoff-sub">NDCG@K · Precision@K · Recall@K</div></div>
+        <div class="er-tradeoff-card"><div class="er-tradeoff-pct">20%</div><div class="er-tradeoff-label">Speed</div><div class="er-tradeoff-sub">Training time, normalized</div></div>
+        <div class="er-tradeoff-card"><div class="er-tradeoff-pct">10%</div><div class="er-tradeoff-label">Scalability</div><div class="er-tradeoff-sub">Max users / items ceiling</div></div>
+      </div>
+      <div style="text-align:center;padding:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r-md);">
+        <div style="font-size:14px;font-weight:700;color:white;">Composite Score = 0.70 × Performance + 0.20 × Speed + 0.10 × Scalability</div>
+      </div>
+    </div>
+
+    <!-- Section 7: Honest Engineering Gaps -->
+    <div class="anim-up delay-5" style="position:relative;z-index:1;margin-bottom:48px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:16px;">Section 07 · Engineering Decisions, Not Limitations</div>
+      <div class="g2">
+        ${gaps.map(g=>`
+        <div class="er-gap-card">
+          <div class="er-gap-title">${g.title}</div>
+          <div class="er-gap-desc">${g.desc}</div>
+          <div class="er-gap-tag">🗺️ ${g.tag}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Final Hero Statement -->
+    <div class="er-final anim-up delay-5">
+      <div class="er-final-title"><span class="num">21</span> Algorithms. <span class="num">11</span> Families. <span class="num">1</span> Automated Decision Engine.</div>
+      <div class="er-final-sub">Every tenant receives the model that best matches its data — automatically.</div>
+    </div>
+  </div>`;
+}
+
 function slideSelection() {
   return `
   <div class="slide-inner">
-    <div class="eyebrow anim-up">Chapter 10</div>
+    <div class="eyebrow anim-up">Chapter 11</div>
     <h2 class="slide-title anim-up delay-1">Automated Model<br/>Selection Engine</h2>
     <p class="slide-lead anim-up delay-2">Zero manual intervention from data upload to live serving. The pipeline discovers, evaluates, and promotes the optimal model autonomously.</p>
 
@@ -391,7 +550,7 @@ function slideSelection() {
 function slideMetrics() {
   return `
   <div class="slide-inner">
-    <div class="eyebrow anim-up">Chapter 11</div>
+    <div class="eyebrow anim-up">Chapter 12</div>
     <h2 class="slide-title anim-up delay-1">Evaluation Metrics<br/>Dashboard</h2>
     <p class="slide-lead anim-up delay-2">Benchmark results from Tenant 002 — actual algorithm runs, real data, composite leaderboard.</p>
 
@@ -424,7 +583,7 @@ function slideMetrics() {
 function slideSecurity() {
   return `
   <div class="slide-inner">
-    <div class="eyebrow anim-up">Chapter 12</div>
+    <div class="eyebrow anim-up">Chapter 13</div>
     <h2 class="slide-title anim-up delay-1">Security Architecture</h2>
     <p class="slide-lead anim-up delay-2">Defense-in-depth across every platform layer — seven implemented security controls protecting tenant data and API access.</p>
 
@@ -459,7 +618,7 @@ function slideSecurity() {
 function slideRoadmap() {
   return `
   <div class="slide-inner">
-    <div class="eyebrow anim-up">Chapter 13</div>
+    <div class="eyebrow anim-up">Chapter 14</div>
     <h2 class="slide-title anim-up delay-1">Product Roadmap</h2>
     <p class="slide-lead anim-up delay-2">Three phases of platform evolution — from production hardening to next-generation AI.</p>
 
@@ -499,7 +658,7 @@ function slideClosing() {
   <div class="slide-inner" style="min-height:100vh;justify-content:center;align-items:center;text-align:center;">
     <canvas id="closingCanvas" style="position:absolute;inset:0;pointer-events:none;width:100%;height:100%;"></canvas>
     <div style="position:relative;z-index:1;max-width:700px;margin:0 auto;">
-      <div class="eyebrow anim-up" style="justify-content:center;">Chapter 14</div>
+      <div class="eyebrow anim-up" style="justify-content:center;">Chapter 15</div>
       <h2 class="slide-title anim-up delay-1" style="color:white;font-size:clamp(40px,5vw,72px);text-align:center;">The Future of<br/>Personalization<br/><span style="background:var(--grad-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Is Already Built</span></h2>
       <p class="slide-lead anim-up delay-2" style="text-align:center;margin:0 auto 48px;">Production-ready. Multi-tenant. AI-powered. Enterprise-scale. 21 algorithms. Zero ML expertise required.</p>
       <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:48px;" class="anim-up delay-3">
@@ -520,12 +679,13 @@ let currentSlide = 0;
 let isAnimating = false;
 let lcInterval = null;
 let lcStep = 0;
+let erPipeInterval = null;
 const TOTAL = CHAPTERS.length;
 
 const SLIDE_RENDERERS = [
   slideHero, slideExec, slideProblem, slideSystem,
   slideHighLevel, slideLifecycle, slidePipeline, slideEmbedding,
-  slideAlgo, slideSelection, slideMetrics, slideSecurity,
+  slideAlgo, slideRationale, slideSelection, slideMetrics, slideSecurity,
   slideRoadmap, slideClosing
 ];
 
@@ -579,13 +739,15 @@ window.goTo = goTo;
 
 function onSlideEnter(idx) {
   if (lcInterval) { clearInterval(lcInterval); lcInterval = null; }
+  if (erPipeInterval) { clearInterval(erPipeInterval); erPipeInterval = null; }
 
   if (idx === 3) setTimeout(initEcosystemCanvas, 100);
   if (idx === 5) setTimeout(initLifecycleAnim, 100);
   if (idx === 7) setTimeout(initEmbeddingCanvas, 100);
   if (idx === 8) setTimeout(initGalaxyCanvas, 100);
-  if (idx === 10) setTimeout(initCharts, 100);
-  if (idx === 13) setTimeout(initClosingCanvas, 100);
+  if (idx === 9) setTimeout(initRationaleAnimations, 100);
+  if (idx === 11) setTimeout(initCharts, 100);
+  if (idx === 14) setTimeout(initClosingCanvas, 100);
 }
 
 function updateUI() {
@@ -650,6 +812,13 @@ window.toggleArchLayer = function(i) {
     detail.style.display = 'block';
     icon.style.transform = 'rotate(180deg)';
   }
+};
+
+/* ─── ENGINEERING RATIONALE: FAMILY CARD TOGGLE ─── */
+window.toggleERFamily = function(i) {
+  const card = document.getElementById(`erfam-${i}`);
+  if (!card) return;
+  card.classList.toggle('open');
 };
 
 /* ─── ALGO FILTER ─── */
@@ -990,8 +1159,27 @@ function initLifecycleAnim() {
 }
 
 /* ═══════════════════════════════════════════════════════
-   CHARTS
+   ENGINEERING RATIONALE — SEQUENTIAL PIPELINE GLOW
 ═══════════════════════════════════════════════════════ */
+function initRationaleAnimations() {
+  const circles = document.querySelectorAll('[id^="erpc-"]');
+  const connectors = document.querySelectorAll('[id^="erpcon-"]');
+  if (!circles.length) return;
+  let cur = 0;
+  function advance() {
+    circles.forEach((c, i) => c.classList.toggle('lit', i <= cur));
+    connectors.forEach((c, i) => c.classList.toggle('lit', i < cur));
+    cur = (cur + 1) % (circles.length + 2);
+    if (cur === 0) {
+      circles.forEach(c => c.classList.remove('lit'));
+      connectors.forEach(c => c.classList.remove('lit'));
+    }
+  }
+  advance();
+  erPipeInterval = setInterval(advance, 550);
+}
+
+
 function initCharts() {
   const algos = ['Ecom-Pop.','Movie-KNN','EASE','SVD','ALS','LightFM'];
   const ndcg  = [0.2286,0.1563,0.1380,0.1180,0.1095,0.1010];
